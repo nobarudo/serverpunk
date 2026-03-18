@@ -12,38 +12,56 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed dist/*
+//go:embed all:build
 var frontendAssets embed.FS
 
 func setupFrontend(router *gin.Engine) {
-	assets, err := fs.Sub(frontendAssets, "dist")
+	assets, err := fs.Sub(frontendAssets, "build")
 	if err != nil {
 		log.Fatalf("フロントエンドのビルドファイルが見つかりません: %v", err)
 	}
 
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/serverpunk/")
+	})
+
 	router.NoRoute(func(c *gin.Context) {
 		path := c.Request.URL.Path
-		if strings.HasPrefix(path, "/api/") {
+
+		// 1. API宛の通信は絶対に404を返す
+		if strings.HasPrefix(path, "/serverpunk/api/") || strings.HasPrefix(path, "/api/") {
 			c.JSON(http.StatusNotFound, gin.H{"error": "API Endpoint not found"})
 			return
 		}
 
-		localPath := strings.TrimPrefix(path, "/")
-		if localPath == "" {
-			localPath = "index.html"
+		searchPath := strings.TrimPrefix(path, "/serverpunk")
+		searchPath = strings.TrimPrefix(searchPath, "/")
+
+		log.Printf("[SPA Debug] Req: '%s' -> Search: '%s'", path, searchPath)
+
+		// 2. ファイル探索（JSやCSS用）
+		f, err := assets.Open(searchPath)
+		if err == nil {
+			stat, _ := f.Stat()
+			if stat != nil && !stat.IsDir() {
+				f.Close()
+				c.FileFromFS("/"+searchPath, http.FS(assets))
+				return
+			}
+			f.Close()
 		}
 
-		// ファイルが存在するか確認
-		file, err := assets.Open(localPath)
+		log.Printf("[SPA Debug] Serving index.html directly for: '%s'", path)
+
+		// 🌟 修正箇所：Goの FileFromFS を使わず、メモリから直接読み込んで返す！
+		// これにより、Goのお節介な301リダイレクトを完全に無効化します
+		indexData, err := fs.ReadFile(assets, "index.html")
 		if err != nil {
-			// 存在しない場合は index.html を返す
-			indexFile, _ := fs.ReadFile(assets, "index.html")
-			c.Data(http.StatusOK, "text/html; charset=utf-8", indexFile)
+			c.String(http.StatusInternalServerError, "index.html not found in binary")
 			return
 		}
-		file.Close()
 
-		// 静的ファイルの配信
-		http.FileServer(http.FS(assets)).ServeHTTP(c.Writer, c.Request)
+		// 純粋なHTMLデータとしてステータス200で強制的に送り返す
+		c.Data(http.StatusOK, "text/html; charset=utf-8", indexData)
 	})
 }

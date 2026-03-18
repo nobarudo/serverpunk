@@ -8,7 +8,7 @@ import (
 
 func routing(router *gin.Engine) {
 
-	api := router.Group("/api")
+	api := router.Group("/serverpunk/api")
 	{
 		api.GET("/status", monitor.GetStatus)
 	}

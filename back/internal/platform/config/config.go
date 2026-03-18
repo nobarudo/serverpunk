@@ -20,7 +20,7 @@ func init() {
 func LoadConfig() {
 	err := godotenv.Load("configs/server.env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Info: No .env file found, using system environment variables.")
 	}
 	config.Port = os.Getenv("PORT")
 	if config.Port == "" {
