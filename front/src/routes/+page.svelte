@@ -71,6 +71,13 @@
         position: relative;
         transition: background-color 0.8s ease;
     }
+
+    .face-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .face {
         font-family: "Courier New", Courier, monospace;
         font-size: 12rem;
@@ -86,25 +93,17 @@
         user-select: none;
         transition: transform 0.2s;
     }
+
     .stress {
         animation: shake 0.1s infinite;
     }
-    @keyframes shake {
-        0% {
-            transform: translate(2px, 2px);
-        }
-        50% {
-            transform: translate(-2px, -2px);
-        }
-        100% {
-            transform: translate(2px, -2px);
-        }
-    }
+
     .eye {
         font-size: 15rem;
         display: inline-block;
         animation: blink 4s infinite;
     }
+
     .mouth {
         font-size: 10rem;
     }
@@ -156,37 +155,15 @@
         gap: 16px;
     }
 
-    @media (min-width: 761px) {
-        .face-container {
-            flex-direction: row;
-        }
-    }
     @media (max-width: 760px) {
-        .face-container {
-            flex-direction: row;
+        .face {
+            gap: 1rem;
         }
         .eye {
             font-size: 12rem;
-            display: inline-block;
-            animation: blink 4s infinite;
         }
         .mouth {
             font-size: 6rem;
-        }
-        .face {
-            font-family: "Courier New", Courier, monospace;
-            font-size: 12rem;
-            font-weight: 900;
-            color: #ffcc00;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            z-index: 10;
-            text-shadow:
-                0 0 20px #ffcc00,
-                0 0 40px #e67e22;
-            user-select: none;
-            transition: transform 0.2s;
         }
     }
 </style>
