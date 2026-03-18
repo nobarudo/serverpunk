@@ -21,7 +21,6 @@
     onMount(() => {
         const fetchStatus = async () => {
             try {
-                // vite.config.js の proxy を通って Go サーバーへ！
                 const res = await fetch("/serverpunk/api/status");
                 if (res.ok) {
                     const data = await res.json();
@@ -33,15 +32,12 @@
                 }
             } catch (e) {
                 console.error("サーバーちゃん通信エラー:", e);
-                // 通信が切れたら目を「×」にするなどのエラーハンドリングもここで可能です
             }
         };
 
-        // 起動直後に1回取得し、その後は2秒(2000ms)ごとに自動取得
         fetchStatus();
         const interval = setInterval(fetchStatus, 2000);
 
-        // 画面を離れたらタイマーを解除（メモリリーク防止：ここも美学ですね）
         return () => clearInterval(interval);
     });
 </script>
@@ -60,7 +56,6 @@
 </main>
 
 <style>
-    /* CSSはそのまま変更なしでOKです！ */
     :global(body) {
         margin: 0;
         padding: 0;
@@ -153,5 +148,45 @@
         );
         z-index: 21;
         pointer-events: none;
+    }
+
+    .face-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    @media (min-width: 761px) {
+        .face-container {
+            flex-direction: row;
+        }
+    }
+    @media (max-width: 760px) {
+        .face-container {
+            flex-direction: row;
+        }
+        .eye {
+            font-size: 12rem;
+            display: inline-block;
+            animation: blink 4s infinite;
+        }
+        .mouth {
+            font-size: 6rem;
+        }
+        .face {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 12rem;
+            font-weight: 900;
+            color: #ffcc00;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 10;
+            text-shadow:
+                0 0 20px #ffcc00,
+                0 0 40px #e67e22;
+            user-select: none;
+            transition: transform 0.2s;
+        }
     }
 </style>

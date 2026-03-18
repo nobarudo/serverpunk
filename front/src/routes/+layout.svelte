@@ -5,6 +5,13 @@
 </script>
 
 <svelte:head>
+    <title>Serverpunk</title>
+    <meta
+        name="description"
+        content="サーバーリソースのリアルタイム監視ダッシュボード"
+    />
+
+    <meta name="theme-color" content="#1a1a1a" />
     <link rel="icon" href={favicon} />
 </svelte:head>
 
