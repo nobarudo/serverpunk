@@ -157,13 +157,13 @@
 
     @media (max-width: 760px) {
         .face {
-            gap: 1rem;
+            gap: 0.3rem;
         }
         .eye {
-            font-size: 12rem;
+            font-size: 10rem;
         }
         .mouth {
-            font-size: 6rem;
+            font-size: 5rem;
         }
     }
 </style>
